@@ -1,5 +1,9 @@
+import { ContextProvider } from '@/contexts/ContextProvider'
 import './globals.css'
 import { Inter } from 'next/font/google'
+import { Navbar } from '@/components/navbar'
+import { ContentContainer } from '@/components/contentContainer'
+import Notifications from '@/components/notifications'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -16,10 +20,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ContextProvider>
         <div className="flex flex-col h-screen w-screen">
-          {children}
+          <Notifications />
+          <Navbar />
+          
+            {children}
+          
         </div>
+        </ContextProvider>
       </body>
     </html>
   )
 }
+
+
