@@ -30,11 +30,10 @@ export const Navbar: React.FC = () => {
 
                 </div>
 
-                {/* Nav Links */}
-                {/* Wallet & Settings */}
+                
                 <div className="navbar-end">
                     <div className="hidden md:inline-flex align-items-center justify-items gap-6">
-                        <WalletMultiButtonDynamic className="btn-ghost btn-sm rounded-btn text-lg mr-6 " />
+                        <WalletMultiButtonDynamic className="btn-ghost btn-sm rounded-btn text-lg mr-6 "/>
                     </div>
                     <label
                         htmlFor="my-drawer"
