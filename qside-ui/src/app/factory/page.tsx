@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useMetaplex } from '@/hooks/useMetaplex';
-import { Metaplex, bundlrStorage, toMetaplexFile, toMetaplexFileFromBrowser, walletAdapterIdentity } from '@metaplex-foundation/js';
+import { CreateCandyMachineInput, DefaultCandyGuardSettings, Metaplex, bundlrStorage, toBigNumber, toMetaplexFile, toMetaplexFileFromBrowser, walletAdapterIdentity } from '@metaplex-foundation/js';
+import { set } from 'date-fns';
 
 const SOLANA_RPC = 'https://api.devnet.solana.com';
 const SESSION_HASH = 'QNDEMO' + Math.ceil(Math.random() * 1e9); // Random unique identifier for your session
@@ -13,8 +14,6 @@ const SOLANA_CONNECTION = new Connection(SOLANA_RPC, { commitment: 'finalized', 
 
 
 async function createCollectionNft(nft_metadata, image, wallet, metaplex) {
-
-    
 
     const nfts = Metaplex
         .make(SOLANA_CONNECTION, { cluster: 'devnet' })
@@ -50,6 +49,30 @@ async function createCollectionNft(nft_metadata, image, wallet, metaplex) {
     return uploadedMetadata.uri.toString();
 }
 
+//generate the candy machine for the collection
+async function generateCandyMachine(metaplex, wallet, collection_nft_mint, symbol) {
+    const candyMachineSettings: CreateCandyMachineInput<DefaultCandyGuardSettings> =
+        {
+            itemsAvailable: toBigNumber(3), // Collection Size: 3
+            sellerFeeBasisPoints: 1000, // 10% Royalties on Collection
+            symbol: symbol,
+            maxEditionSupply: toBigNumber(0), // 0 reproductions of each NFT allowed
+            isMutable: true,
+            creators: [
+                { address: wallet.publicKey, share: 100 },
+            ],
+            collection: {
+                address: new PublicKey(collection_nft_mint), // Can replace with your own NFT or upload a new one
+                updateAuthority: wallet,
+            },
+        };
+    const { candyMachine } = await metaplex.metaplex.candyMachines().create(candyMachineSettings);
+    console.log(`✅ - Created Candy Machine: ${candyMachine.address.toString()}`);
+    console.log(`     https://explorer.solana.com/address/${candyMachine.address.toString()}?cluster=devnet`);
+
+    return candyMachine.address.toString();
+}
+
 
 export default function Home() {
     const [name, setName] = useState('');
@@ -57,6 +80,8 @@ export default function Home() {
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
     const [collectionUri, setCollectionUri] = useState(null);
+    const [collectionNftMint, setCollectionNftMint] = useState(null);
+    const [candyMachineUri, setCandyMachineUri] = useState(null);
 
     const wallet = useWallet();
     const metaplex = useMetaplex();
@@ -73,6 +98,10 @@ export default function Home() {
 
         let res = await createCollectionNft(nft_metadata, image, wallet, metaplex);
         setCollectionUri(res);
+        setCollectionNftMint(res.split('https://arweave.net/')[1]);
+
+        let candyRes = await generateCandyMachine(metaplex, wallet, collectionNftMint, symbol);
+        setCandyMachineUri(candyRes);
 
 
         // Use Metaplex, Candymachine, and Sugar to deploy and upload
