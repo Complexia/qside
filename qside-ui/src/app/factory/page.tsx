@@ -69,8 +69,25 @@ async function generateCandyMachine(metaplex, wallet, collection_nft_mint, symbo
     const { candyMachine } = await metaplex.metaplex.candyMachines().create(candyMachineSettings);
     console.log(`✅ - Created Candy Machine: ${candyMachine.address.toString()}`);
     console.log(`     https://explorer.solana.com/address/${candyMachine.address.toString()}?cluster=devnet`);
-
+    
+    
     return candyMachine.address.toString();
+}
+
+//saving to supabase so that they can be fetched and browsed in gallery for minting
+async function saveCandyMachineToSupabase(candyMachineUri, collectionUri, wallet) {
+   let payload = {
+        candy_machine_id: candyMachineUri,
+        collection_id: collectionUri,
+        wallet_user_address: wallet.publicKey.toString()
+   } 
+   await fetch('/api/candyMachine/create', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+   })
 }
 
 
@@ -102,6 +119,8 @@ export default function Home() {
 
         let candyRes = await generateCandyMachine(metaplex, wallet, collectionNftMint, symbol);
         setCandyMachineUri(candyRes);
+
+        await saveCandyMachineToSupabase(candyRes, res, wallet);
 
 
         // Use Metaplex, Candymachine, and Sugar to deploy and upload
