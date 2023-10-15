@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import ReactPaginate from "react-paginate";
 import Link from "next/link";
-//import { supabase } from "@/lib/supabase-client";
-import { set } from "date-fns";
 import { createClient } from "@supabase/supabase-js";
 import GalleryPage from "@/components/galleryPage";
 
@@ -21,9 +19,6 @@ async function getCandyMachinesFromSupabase() {
     console.log(data);
     return data;
 }
-
-console.log(process.env.SUPABASE_URL)
-
 
 
 const Gallery = async () => {
