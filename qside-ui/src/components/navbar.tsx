@@ -23,7 +23,7 @@ export const Navbar: React.FC = () => {
             <div className="navbar flex h-20 w-full flex-row md:mb-2 shadow-lg bg-black text-neutral-content border-b border-zinc-600 bg-opacity-66">
                 <div className="navbar-start align-items-center">
                     <div className="hidden sm:inline w-22 h-22 md:p-2 ml-10">
-                        <Link href="https://qside.io" target="_blank" rel="noopener noreferrer" passHref className="text-secondary hover:text-white">
+                        <Link href="/" className="text-secondary hover:text-white">
                             QSIDE
                         </Link>
                     </div>
